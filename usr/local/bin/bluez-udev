@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ "${ACTION}" = "add" ]; then
+
+  echo "discoverable off" | bluetoothctl
+  ifconfig wlan0 down
+
+elif [ "${ACTION}" = "remove" ]; then
+
+  echo "discoverable on" | bluetoothctl
+  ifconfig wlan0 up
+
+fi
