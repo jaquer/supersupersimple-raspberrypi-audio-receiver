@@ -1,5 +1,7 @@
 #!/bin/sh
 
+logger -t "bluetooth-udev" "${ACTION}"
+
 if [ "${ACTION}" = "add" ]; then
 
   echo "discoverable off" | bluetoothctl
