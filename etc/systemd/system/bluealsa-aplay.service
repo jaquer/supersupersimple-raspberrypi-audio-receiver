@@ -1,0 +1,12 @@
+[Unit]
+Description=BlueALSA player
+Requires=bluealsa.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/bluealsa-aplay 00:00:00:00:00:00
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

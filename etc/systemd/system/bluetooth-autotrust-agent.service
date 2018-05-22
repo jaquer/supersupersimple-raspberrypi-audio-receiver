@@ -1,0 +1,13 @@
+[Unit]
+Description=Bluetooth autotrust agent
+Requires=bluetooth.service
+
+[Service]
+Type=simple
+User=root
+ExecStartPre=/bin/hciconfig hci0 piscan
+ExecStart=/usr/local/bin/bluetooth-autotrust-agent
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

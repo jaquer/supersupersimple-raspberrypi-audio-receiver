@@ -1,0 +1,13 @@
+[Unit]
+Description=BlueALSA service
+Requires=bluetooth.service
+
+[Service]
+Type=simple
+User=root
+Environment="LIBASOUND_THREAD_SAFE=0"
+ExecStart=/usr/bin/bluealsa --profile a2dp-sink
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
