@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+
+# Author: Douglas Otwell
+# Modisimplifications for Raspbian Stretch Lite: Arturo R.
+# Requirements: python-dbus python-gi
+# This software is released to the public domain
+
+# The Software is provided "as is" without warranty of any kind, either express or implied,
+# including without limitation any implied warranties of condition, uninterrupted use,
+# merchantability, fitness for a particular purpose, or non-infringement.
+
+import sys
+import dbus
+import dbus.service
+import dbus.mainloop.glib
+from gi.repository import GObject as gobject
+
+class Agent(dbus.service.Object):
+
+    @dbus.service.method("org.bluez.Agent1", in_signature="ou", out_signature="")
+    def RequestConfirmation(self, device_path, passkey):
+        print "RequestConfirmation (%s, %06d)" % (device_path, passkey)
+        properties = dbus.Interface(bus.get_object("org.bluez", device_path), "org.freedesktop.DBus.Properties")
+        properties.Set("org.bluez.Device1", "Trusted", True)
+        return
+
+    @dbus.service.method("org.bluez.Agent1", in_signature="os", out_signature="")
+    def AuthorizeService(self, device, uuid):
+        print "AuthorizeService (%s, %s)" % (device, uuid)
+        return
+
+if __name__ == '__main__':
+
+    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+    bus = dbus.SystemBus()
+
+    manager = dbus.Interface(bus.get_object("org.bluez", "/org/bluez"), "org.bluez.AgentManager1")
+
+    agent_path = "/autotrust/agent"
+    Agent = Agent(bus, agent_path)
+    try:
+        manager.RegisterAgent(agent_path, "NoInputNoOutput")
+        manager.RequestDefaultAgent(agent_path)
+        print "autotrust-agent started"
+    except dbus.exceptions.DBusException, ex:
+        print ex
+        raise SystemExit
+
+    mainloop = gobject.MainLoop()
+    try:
+        mainloop.run()
+    except KeyboardInterrupt:
+        mainloop.quit()
